@@ -1,0 +1,35 @@
+import maup
+import geopandas as gdp
+from gerrychain import graph
+import pandas as pd
+import numpy as np
+
+blocks = gdp.read_file("./Downloads/ny_b_2020_bound.shp")
+
+blocks.head()
+
+pop_data  = pd.read_csv("./Downloads/ny_pl2020_b.csv")
+
+pop_data.head()
+
+blocks["GEOID20"] = blocks["GEOID20"].astype(np.int64)
+blocks_i = blocks.set_index("GEOID20")
+pop_data_i = pop_data.set_index("GEOCODE")
+
+blocks_i["Population"] = pop_data_i["P0010001"]
+   
+blocks_i["Population"]
+  
+blocks_i.loc[360050265002001]
+  
+pop_data_i["P0010001"]
+
+precincts = gdp.read_file("./Downloads/ny_vest_20.shp")
+#con = gpd.r
+   
+precincts.head()
+   
+import geopandas as gdp
+con = gdp.read_file("./Downloads/CON22_June_03_2022.shp")
+sldl = gdp.read_file("./Downloads/Assembly22.shp")
+sldu = gdp.read_file("./Downloads/SEN22_June_03_2022.shp")
