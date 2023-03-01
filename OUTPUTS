@@ -1,0 +1,91 @@
+Python 3.9.16 | packaged by conda-forge | (main, Feb  1 2023, 21:28:38) [MSC v.1929 64 bit (AMD64)]
+Type 'copyright', 'credits' or 'license' for more information
+IPython 8.10.0 -- An enhanced Interactive Python. Type '?' for help.
+
+In [1]: import maup
+   ...: import geopandas as gdp
+   ...: from gerrychain import graph
+   ...: import pandas as pd
+   ...: import numpy as np
+   ...:
+   ...: blocks = gdp.read_file("./Downloads/ny_b_2020_bound.shp")
+   ...:
+   ...: blocks.head()
+Out[1]:
+  STATEFP20 COUNTYFP20 TRACTCE20  ...   INTPTLAT20    INTPTLON20                                           geometry
+0        36        005    026500  ...  +40.8655945  -073.9015619  POLYGON ((-73.90252 40.86487, -73.90120 40.866...
+1        36        005    042800  ...  +40.8959612  -073.8453054  POLYGON ((-73.84599 40.89650, -73.84510 40.896...
+2        36        005    020400  ...  +40.8421861  -073.8526495  POLYGON ((-73.85334 40.84247, -73.85280 40.842...
+3        36        005    029700  ...  +40.8850485  -073.9127419  POLYGON ((-73.91316 40.88551, -73.91259 40.886...
+4        36        005    023900  ...  +40.8591779  -073.9017800  POLYGON ((-73.90278 40.85839, -73.90163 40.860...
+
+[5 rows x 16 columns]
+
+In [2]: pop_data  = pd.read_csv("./Downloads/ny_pl2020_b.csv")
+   ...:
+   ...: pop_data.head()
+   ...:
+<ipython-input-2-7cb8a60a4d57>:1: DtypeWarning: Columns (29,31,37,38) have mixed types. Specify dtype option on import or set low_memory=False.
+  pop_data  = pd.read_csv("./Downloads/ny_pl2020_b.csv")
+Out[2]:
+  FILEID STUSAB  SUMLEV  GEOVAR  GEOCOMP  CHARITER  LOGRECNO                     GEOID          GEOCODE  REGION  DIVISION  ...  H0010003  P0050001  P0050002 P0050003  P0050004  P0050005 P0050006  P0050007  P0050008  P0050009  P0050010
+0   PLST     NY     750       0        0         0    283871  7500000US360010001001000  360010001001000       1         2  ...         0         0         0        0         0         0        0         0         0         0         0
+1   PLST     NY     750       0        0         0    283872  7500000US360010001001001  360010001001001       1         2  ...         0         0         0        0         0         0        0         0         0         0         0
+2   PLST     NY     750       0        0         0    283873  7500000US360010001001002  360010001001002       1         2  ...         0         0         0        0         0         0        0         0         0         0         0
+3   PLST     NY     750       0        0         0    283874  7500000US360010001001003  360010001001003       1         2  ...         0         0         0        0         0         0        0         0         0         0         0
+4   PLST     NY     750       0        0         0    283875  7500000US360010001001004  360010001001004       1         2  ...         0         0         0        0         0         0        0         0         0         0         0
+
+[5 rows x 373 columns]
+
+In [3]: blocks["GEOID20"] = blocks["GEOID20"].astype(np.int64)
+   ...: blocks_i = blocks.set_index("GEOID20")
+   ...: pop_data_i = pop_data.set_index("GEOCODE")
+   ...:
+   ...: blocks_i["Population"] = pop_data_i["P0010001"]
+   ...:
+   ...: blocks_i["Population"]
+   ...:
+   ...: blocks_i.loc[360050265002001]
+   ...:
+   ...: pop_data_i["P0010001"]
+Out[3]:
+GEOCODE
+360010001001000     0
+360010001001001     0
+360010001001002     0
+360010001001003     0
+360010001001004     0
+                   ..
+361231505022069     0
+361231505022070     5
+361231505022071    27
+361231505022072     0
+361231505022073     0
+Name: P0010001, Length: 288819, dtype: int64
+
+
+In [10]: precints = gdp.read_file("./Downloads/ny_vest_20.shp")
+
+In [22]: import geopandas as gdp
+    ...: con = gdp.read_file("./Downloads/CON22_June_03_2022.shp")
+    ...: sldl = gdp.read_file("./Downloads/Assmebly22.shp")
+    ...: sldu = gdp.read_file("./Downloads/SEN22_June_03_2022.shp")
+    ...:
+    
+In [24]: assignment_bk_pre = maup.assign(blocks_i, precincts)
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+Cell In[24], line 1
+----> 1 assignment_bk_pre = maup.assign(blocks_i, precincts)
+
+File ~\anaconda3\envs\gerrymandering\lib\site-packages\maup\crs.py:9, in require_same_crs.<locals>.wrapped(*args, **kwargs)
+      7 geoms1, geoms2, *rest = args
+      8 if not geoms1.crs == geoms2.crs:
+----> 9     raise TypeError(
+     10         "the source and target geometries must have the same CRS. {} {}".format(
+     11             geoms1.crs, geoms2.crs
+     12         )
+     13     )
+     14 return f(*args, **kwargs)
+
+TypeError: the source and target geometries must have the same CRS. EPSG:4269 EPSG:3857
